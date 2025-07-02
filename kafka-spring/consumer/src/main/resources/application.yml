@@ -2,11 +2,26 @@ application:
   kafka:
     topic: "demo-topic"
 
+logging:
+  config: classpath:logback.xml
 
 spring:
+  application:
+    name: "demo-consumer"
   kafka:
     consumer:
-      group-id: "test-group"
+      group-id: ${spring.application.name}-${USERNAME:${USER:unknown_user_name}}-consumer-group
+#      group-id: "test-group"
       bootstrap-servers: "localhost:9092"
       client-id: "demo-consumer"
       auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    properties:
+      security.protocol: "PLAINTEXT"
+  jackson:
+    default-property-inclusion: NON_NULL
+
+
+mock-web-server:
+  port: 8090

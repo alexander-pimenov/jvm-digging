@@ -18,13 +18,13 @@ class BasePlugin : Plugin<Project> {
             mavenLocal()
             mavenCentral()
 
-            maven {
-                credentials {
-                    username = project.property(Versions.packagesPropUserName) as String?
-                    password = project.property(Versions.packagesPropPassword) as String?
-                }
-                url = uri(Versions.packagesUrl)
-            }
+//            maven {
+//                credentials {
+//                    username = project.property(Versions.packagesPropUserName) as String?
+//                    password = project.property(Versions.packagesPropPassword) as String?
+//                }
+//                url = uri(Versions.packagesUrl)
+//            }
 
         }
         group = Versions.projectGroupName

@@ -21,16 +21,17 @@ gradlePlugin {
         }
     }
 }
-
+ //он опубликован в локальный (mavenLocal)
 publishing {
     repositories {
-        maven {
-            credentials {
-                username = project.property("gitlabUserMaven") as String?
-                password = project.property("gitlabPasswordMaven") as String?
-            }
-            url = uri("https://gitlab.com/api/v4/projects/27412323/packages/maven")
-        }
+        mavenLocal()
+//        maven {
+//            credentials {
+//                username = project.property("gitlabUserMaven") as String?
+//                password = project.property("gitlabPasswordMaven") as String?
+//            }
+//            url = uri("https://gitlab.com/api/v4/projects/27412323/packages/maven")
+//        }
     }
 }
 

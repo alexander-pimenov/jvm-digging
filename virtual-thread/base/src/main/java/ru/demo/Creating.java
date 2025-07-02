@@ -9,6 +9,7 @@ public class Creating {
     private static final Logger log = LoggerFactory.getLogger(Creating.class);
 
     public static void main(String[] args) {
+        //создание платформенного потока
         Thread.ofPlatform().start(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 sleep();
@@ -16,6 +17,7 @@ public class Creating {
             }
         });
 
+        //создание виртуального потока
         Thread.ofVirtual().start(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 sleep();

@@ -6,7 +6,7 @@ import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 plugins {
     idea
     id("io.spring.dependency-management")
-    id("name.remal.sonarlint") apply false
+//    id("name.remal.sonarlint") apply false
     id("com.diffplug.spotless") apply false
     id("fr.brouillard.oss.gradle.jgitver") apply false
     id("org.springframework.boot") apply false
@@ -56,9 +56,9 @@ allprojects {
         resolutionStrategy {
             failOnVersionConflict()
 
-            force("org.sonarsource.analyzer-commons:sonar-analyzer-commons:2.4.0.1317")
+            //force("org.sonarsource.analyzer-commons:sonar-analyzer-commons:2.4.0.1317")
             force("com.google.code.findbugs:jsr305:3.0.2")
-            force("org.sonarsource.sslr:sslr-core:1.24.0.633")
+            //force("org.sonarsource.sslr:sslr-core:1.24.0.633")
             force("org.eclipse.platform:org.eclipse.osgi:3.18.300")
             force("com.google.guava:guava:32.1.2-jre")
         }
@@ -88,7 +88,7 @@ subprojects {
         options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing", "-Werror"))
     }
 
-    apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
+    //apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
     apply<com.diffplug.gradle.spotless.SpotlessPlugin>()
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         java {

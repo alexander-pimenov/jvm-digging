@@ -1,7 +1,7 @@
 plugins {
     java
     id("io.spring.dependency-management") version "1.1.4"
-    id("name.remal.sonarlint") version "3.4.9"
+    //id("name.remal.sonarlint") version "3.4.9"
     id("com.diffplug.spotless") version "6.25.0"
 }
 

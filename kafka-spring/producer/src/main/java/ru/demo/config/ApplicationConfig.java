@@ -55,7 +55,7 @@ public class ApplicationConfig {
 
     @Bean
     public NewTopic topic() {
-        return TopicBuilder.name(topicName).partitions(1).replicas(1).build();
+        return TopicBuilder.name(topicName).partitions(3).replicas(1).build();
     }
 
     @Bean

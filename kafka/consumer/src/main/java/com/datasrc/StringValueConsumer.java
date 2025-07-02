@@ -32,8 +32,9 @@ public class StringValueConsumer {
 
     private void poll() {
         log.info("poll records");
+        //параметр timeout задает время ожидания в миллисекундах и позволяет понять Kafka живой консьюмер или нет
         ConsumerRecords<Long, StringValue> records = myConsumer.getConsumer().poll(timeout);
-        sleep();
+        //sleep();
         log.info("polled records.counter:{}", records.count());
         for (ConsumerRecord<Long, StringValue> kafkaRecord : records) {
             try {
