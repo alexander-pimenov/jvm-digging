@@ -1,0 +1,96 @@
+# Если IDEA не добавляет такие параметры сама. Это безвредно и предотвратит множество странных ошибок!
+# Основные параметры памяти
+-Xms1024m   										# Начальный размер heap (лучше ставить = -Xmx)
+-Xmx2048m   										# Максимальный размер heap (4-8 ГБ, если у тебя 16+ ГБ RAM)
+-XX:ReservedCodeCacheSize=512m  					# Кэш для скомпилированного кода
+-XX:+UseG1GC  										# Включить сборщик мусора G1 (менее "тормозной")
+
+Совет:
+Если у тебя 16 ГБ+ RAM, можно поставить -Xmx4096m или даже -Xmx8192m.
+Но не выделяй больше 25-30% от общей RAM, иначе система начнёт свопировать.
+
+-Xms1024m											# Минимальный размер heap
+-Xmx4096m											# Максимальный размер heap
+-XX:ReservedCodeCacheSize=512m						# 
+-XX:+UseG1GC 										# Включить сборщик мусора G1
+
+
+# Параметры для ускорения работы
+-XX:SoftRefLRUPolicyMSPerMB=50  					# Уменьшает частоту сборки мусора для soft-ссылок
+-Dsun.io.useCanonCaches=false    					# Отключает кэширование файловых путей (редкие баги)
+-Djdk.http.auth.tunneling.disabledSchemes=""  		# Фикс для некоторых HTTP-запросов
+-Djdk.attach.allowAttachSelf=true  					# Нужно для некоторых плагинов (например, JRebel)
+-Dide.no.platform.update=true    					# Отключает проверку обновлений платформы (если не нужно)
+
+# Для SSD и быстрой файловой системы
+-Djava.io.tmpdir=C:\temp\  							# Указать временную папку (если SSD)
+-Dide.filewatcher.disabled=true  					# Ускоряет работу на Windows (если не нужен file watcher)
+
+# Для пользователей Gradle (дополнительно)
+# Если Gradle всё ещё тормозит, можно добавить:
+-Dgradle.parallel=true           					# Параллельная сборка
+-Dgradle.caching=true            					# Кэширование задач
+-Dgradle.daemon.idletimeout=3600000  				# Держать Gradle Daemon дольше
+
+# Экспериментальные/агрессивные оптимизации
+-XX:+HeapDumpOnOutOfMemoryError  					# Дамп памяти при OOM (для дебага)
+-XX:-OmitStackTraceInFastThrow   					# Всегда показывать полный stacktrace
+-XX:MaxJavaStackTraceDepth=10000 					# Увеличивает глубину stacktrace
+
+
+Зачем нужны --add-opens в IntelliJ IDEA?
+IntelliJ IDEA активно использует рефлексию и доступ к внутренним классам Java для:
+- Работы с динамическими классами (например, Lombok, Hibernate, Spring AOP).
+- Интеграции с инструментами сборки (Gradle, Maven).
+- Поддержки плагинов, которым нужен доступ к "приватным" полям/методам JDK.
+
+
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+--add-opens=java.base/java.lang=ALL-UNNAMED
+
+1. --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+Модуль: java.base (базовый модуль JDK).
+Пакет: java.lang.invoke (внутренние классы для работы с MethodHandle, LambdaMetafactory и т. д.).
+Для чего нужно:
+Работа Lombok, который генерирует код через MethodHandle.
+Поддержка лямбд и динамических прокси.
+
+2. --add-opens=java.base/java.lang=ALL-UNNAMED
+Модуль: java.base.
+Пакет: java.lang (включая String, ClassLoader, Thread и другие критичные классы).
+Для чего нужно:
+Доступ к внутренним полям классов через рефлексию (например, для манипуляций с загрузчиками классов).
+Работа некоторых агентов (например, JRebel, ByteBuddy).
+
+
+--add-opens=java.base/java.util=ALL-UNNAMED          # Для работы с коллекциями
+--add-opens=java.desktop/java.awt=ALL-UNNAMED        # Для GUI-плагинов
+--add-opens=java.base/java.nio=ALL-UNNAMED           # Для работы с файлами
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED         # Для Netty и NIO-библиотек
+--add-opens=java.base/java.net=ALL-UNNAMED           # Для HTTP-клиентов
+
+
+
+
+-----------------------------------------------------------------------------------------
+
+### Рекомендуемый конфиг для 16 ГБ RAM
+-Xms1024m
+-Xmx4096m
+-XX:ReservedCodeCacheSize=512m
+-XX:+UseG1GC
+-XX:SoftRefLRUPolicyMSPerMB=50
+-Dsun.io.useCanonCaches=false
+-Djdk.http.auth.tunneling.disabledSchemes=""
+-Djdk.attach.allowAttachSelf=true
+-Djava.io.tmpdir=C:\temp\
+-Dgradle.parallel=true
+-Dgradle.caching=true
+-Dgradle.daemon.idletimeout=3600000
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+--add-opens=java.base/java.lang=ALL-UNNAMED
+--add-opens=java.base/java.util=ALL-UNNAMED
+--add-opens=java.desktop/java.awt=ALL-UNNAMED
+--add-opens=java.base/java.nio=ALL-UNNAMED
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens=java.base/java.net=ALL-UNNAMED
