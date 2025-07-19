@@ -1,8 +1,11 @@
 package ru.demo.mainpackage.config;
 
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -32,6 +35,17 @@ public class ApplConfig {
             }
         });
     }
+
+    //nThreads брать из конфига
+//    @Bean
+//    public EventLoopGroup eventLoopGroup(int nThreads) {
+//        if (nThreads <= 0) {
+//            return new NioEventLoopGroup();
+//        }
+//        ThreadFactory threadFactory =
+//                task -> Thread.ofVirtual().name("kafka-scheduler-loop-").unstarted(task);
+//        return new NioEventLoopGroup(nThreads, threadFactory);
+//    }
 
     @Bean
     public ReactiveWebServerFactory reactiveWebServerFactory(

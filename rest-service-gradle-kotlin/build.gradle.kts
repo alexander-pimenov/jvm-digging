@@ -9,6 +9,7 @@ buildscript {
 //            }
 //            url = uri("https://gitlab.com/api/v4/projects/27412323/packages/maven")
 //        }
+
     }
 
     dependencies {
@@ -21,6 +22,9 @@ plugins {
     java
     id("org.springframework.boot")
 }
+
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 apply(plugin = "base-plugin")
 
