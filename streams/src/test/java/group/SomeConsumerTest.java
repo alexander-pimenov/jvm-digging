@@ -246,6 +246,7 @@ class SomeConsumerTest {
         // Then
         if (shouldMatch) {
             assertThat(result).hasSize(1);
+            System.out.printf("User with group starting with 'A' found: %s. Его группы: %s\n", result.get(0).getUsername(), result.get(0).getGroups());
         } else {
             assertThat(result).isEmpty();
         }

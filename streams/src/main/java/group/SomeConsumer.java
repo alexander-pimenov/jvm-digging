@@ -6,11 +6,8 @@ import java.util.stream.Stream;
 
 /**
  * Проверка на null: Всегда проверяем, что группы не null и не пусты
- *
  * Проверка имени группы: Убеждаемся, что group и group.getName() не null
- *
  * Фильтрация: Используем anyMatch() для проверки хотя бы одной группы, начинающейся с "A"
- *
  * Сбор в ArrayList: Используем подходящий коллектор для возврата ArrayList
  */
 public class SomeConsumer {
