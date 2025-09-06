@@ -1,6 +1,7 @@
 package group;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,7 +15,7 @@ public class SomeConsumer {
 
     public ArrayList<User> consume2(Stream<User> usersStream) {
         return usersStream
-                .filter(user -> user != null)
+                .filter(Objects::nonNull)
                 .filter(user -> user.getGroups() != null && !user.getGroups().isEmpty())
                 .filter(user -> user.getGroups().stream()
                         .anyMatch(group ->
