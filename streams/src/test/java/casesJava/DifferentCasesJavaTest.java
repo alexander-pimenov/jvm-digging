@@ -19,6 +19,15 @@ import java.util.stream.Stream;
  * Простые операции — for-loop может быть быстрее
  * <p>
  * Мелкие коллекции — overhead стримов не оправдан
+ *
+ *  я попробовал первые примеры прогнать и что интересно, для kotlin они отработали, а на stream получил ошибку :
+ *  ```
+ *  java.lang.IllegalStateException: stream has already been operated upon or closed
+ *  ```
+ *
+ *  Почему возникает ошибка?
+ *  Java Stream — это одноразовый (single-use) конвейер. После вызова терминальной операции стрим закрывается и не может быть использован повторно.
+ *
  */
 public class DifferentCasesJavaTest {
 
@@ -43,20 +52,22 @@ public class DifferentCasesJavaTest {
         Stream<String> stream = list.stream();
 
         // Промежуточные операции (lazy)
-        stream
+        Stream<String> sorted = stream
                 .filter(Objects::nonNull)
                 .filter(s -> s.length() > 2)
                 .map(String::toUpperCase)
                 .sorted();
 
+        //Помним - Стрим - одноразовый!!!
         //Терминальные операции (eager)
-        List<String> result = stream.collect(Collectors.toList());
+        // Сохраняем результат обработки в result, чтобы потом продолжить обработку
+        List<String> result = sorted.collect(Collectors.toList());
         System.out.println(result);
         // или
-        long count = stream.count();
+        long count = result.stream().count();
         System.out.println(count);
         // или
-        Optional<String> first = stream.findFirst();
+        Optional<String> first = result.stream().findFirst();
         System.out.println(first.orElse("<null>"));
     }
 

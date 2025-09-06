@@ -14,10 +14,25 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <junit.jupiter.version>5.9.2</junit.jupiter.version>
         <kotlin.version>2.1.0</kotlin.version>
+        <assertj.core.version>>3.24.2</assertj.core.version>
     </properties>
 
+<!--    BOM задает единые версии для всех модулей JUnit, избавляя от необходимости указывать версии для каждой зависимости явно.-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.11.4</version> <!-- укажите актуальную версию -->
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+<!--В секции <dependencies> добавьте нужные зависимости JUnit без указания версии — версия будет наследоваться из BOM-->
     <dependencies>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
@@ -42,13 +57,21 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.2</version>
+<!--            <version>5.9.2</version>-->
             <scope>test</scope>
         </dependency>
+<!--        В BOM версии JUnit не управляют зависимостями AssertJ, поэтому для AssertJ нельзя рассчитывать на авто-установку версии из junit-bom.
+
+При добавлении assertj-core в зависимости необходимо явно указывать версию-->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -68,12 +91,6 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>
             <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
