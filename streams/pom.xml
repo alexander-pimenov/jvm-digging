@@ -61,7 +61,6 @@
             <scope>test</scope>
         </dependency>
 <!--        В BOM версии JUnit не управляют зависимостями AssertJ, поэтому для AssertJ нельзя рассчитывать на авто-установку версии из junit-bom.
-
 При добавлении assertj-core в зависимости необходимо явно указывать версию-->
         <dependency>
             <groupId>org.assertj</groupId>
