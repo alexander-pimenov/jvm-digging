@@ -2,6 +2,7 @@ package casesKt
 
 import org.junit.jupiter.api.Test
 import java.util.*
+import java.util.stream.Collectors
 
 
 /**
@@ -74,6 +75,8 @@ class DifferentCasesKtTest {
     /**
      * Lazy evaluation (ленивые вычисления)
      * Элементы обрабатываются только когда нужно — по требованию.
+     * Промежуточные (filter, map, sorted) — lazy, возвращают новый stream
+     * Терминальные (collect, forEach, count) — eager, запускают обработку
      */
     @Test
     fun `test sequence different cases 2`() {
@@ -106,7 +109,19 @@ class DifferentCasesKtTest {
     }
 
     @Test
-    fun `sequence for each operations`() {
+    fun `multiple sequence operations`() {
+        val sequence: Sequence<String> = listOf("a", "a2", "aa3", "bbb4", "zzzzz5").asSequence()
+
+        // Можно делать multiple terminal operations?
+        val filtered: List<String> = sequence.filter { it.length > 1 }.toList() // OK
+        println(filtered) //[a2, aa3, bbb4, zzzzz5]
+        val mapped = sequence.map { it.uppercase(Locale.getDefault()) }.sorted()
+            .toList()   // Тоже OK? - Да, но всё же лучше брать data за основу.
+        println(mapped) //[A, A2, AA3, BBB4, ZZZZZ5]
+    }
+
+    @Test
+    fun `sequence for each operations, get data again`() {
         val data = listOf("apple", "banana", "cherry")
 
         // Создаем sequence заново для каждой операции
@@ -121,5 +136,98 @@ class DifferentCasesKtTest {
         val result4: List<String> =
             filteredSequence.map { it.uppercase(Locale.getDefault()) }.toList() // Будет работать
         println(result4) //[BANANA, CHERRY]
+    }
+
+    @Test
+    fun `sequence with filtering 1`() {
+        val users = TestUser.createUsers()
+
+        val testUsers: List<TestUser> = users.asSequence().filter {
+            it.age > 18 && it.city == "Moscow"
+        }.sortedBy {
+            it.name
+        }
+            .toList()
+        println("Moscow: $testUsers") //Moscow: [TestUser(name=Alice, age=25, city=Moscow, phone=[]), TestUser(name=Charlie, age=30, city=Moscow, phone=[])]
+    }
+
+    @Test
+    fun `sequence with grouping 2`() {
+        val users = TestUser.createUsers()
+
+        //В Kotlin можно использовать метод groupBy даже для списков, не создавая последовательность
+        val usersByCity: Map<String, List<TestUser>> = users
+            .groupBy { it.city }
+        println("Users by city: $usersByCity")
+        //Users by city: {Moscow=[TestUser(name=Alice, age=25, city=Moscow, phone=[]), TestUser(name=Charlie, age=30, city=Moscow, phone=[])], SPb=[TestUser(name=Bob, age=17, city=SPb, phone=[])], Kazan=[TestUser(name=Diana, age=19, city=Kazan, phone=[])]}
+
+        // Средний возраст по городам
+        // Самый читаемый Kotlin стиль
+        val avgAgeByCity: Map<String, Double> = users.groupBy { it.city }
+            .mapValues { (city, usersInCity) ->
+                usersInCity.map { it.age }.average() //здесь map для коллекций
+            }
+        println("Avg age by city: $avgAgeByCity")
+
+        // Если users очень большая коллекция
+        val avgAgeByCity2: Map<String, Double> = users.asSequence()
+            .groupBy { it.city }
+            .mapValues { (city, usersInCity) ->
+                usersInCity.asSequence().map { it.age }.average()
+            }
+
+        println("Avg age by city: $avgAgeByCity2")
+        // Вывод результатов
+        avgAgeByCity.forEach { (city, avgAge) ->
+            println("$city: ${"%.2f".format(avgAge)}")
+        }
+    }
+
+    /**
+     * Способ 1 - он самый понятный и читаемый.
+     * Способ 2 и 3 полезны только если ты обрабатываешь очень большие данные и хочешь избежать создания промежуточных списков.
+     */
+    @Test
+    fun `different ways to group by`() {
+        val users = TestUser.createUsers()
+
+        // Способ 1 - самый простой
+        //Способ 1: Простой и читаемый (рекомендуемый)
+        //groupBy создает Map<String, List<TestUser>>
+        //mapValues преобразует значения мапы
+        //map { it.age } извлекает возрасты
+        //average() вычисляет среднее
+        val avg1: Map<String, Double> = users.groupBy { it.city }
+            .mapValues { (_, usersInCity) ->
+                usersInCity.map { it.age }.average()
+            }
+        println("Способ 1: $avg1")
+
+        // Способ 2 - с fold
+        //Способ 2: С использованием fold для аккумуляции суммы и count
+        //0.0 to 0 - начальное значение: (sum = 0.0, count = 0)
+        //(sum + user.age) to (count + 1) - обновляем сумму и счетчик
+        //Результат: Map<String, Pair<Double, Int>> где Pair - (общая_сумма_возрастов, количество_людей)
+        val avg2: Map<String, Double> = users.groupingBy { it.city }
+            .fold(0.0 to 0) { (sum, count), user ->
+                (sum + user.age) to (count + 1)
+            }
+            .mapValues { (_, value) -> value.first / value.second }
+        println("Способ 2: $avg2")
+
+        // Способ 3 - с aggregate - Правильный aggregate с сохранением суммы и количества
+        val avg3: Map<String, Double> = users.groupingBy { it.city }
+            .aggregate { key, accumulator: Pair<Double, Int>?, user, first ->
+                if (first) {
+                    // Первый элемент в группе: инициализируем сумму и счетчик
+                    user.age.toDouble() to 1
+                } else {
+                    // Последующие элементы: обновляем сумму и счетчик
+                    (accumulator!!.first + user.age) to (accumulator.second + 1)
+                }
+            }
+            .mapValues { it.value!!.let { (sum, count) -> sum / count } }
+        println("Способ 3: $avg3")
+
     }
 }
